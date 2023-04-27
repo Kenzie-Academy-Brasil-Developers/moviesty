@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createMovieController,
+  deleteMovieController,
   listMoviesController,
   updateMovieController,
 } from "./controllers/movies.controllers";
@@ -19,5 +20,6 @@ userRouter.post(
 );
 userRouter.get("", listMoviesController);
 userRouter.patch("/:id", validateId, validateName, updateMovieController);
+userRouter.delete("/:id", validateId, deleteMovieController);
 
 export default userRouter;

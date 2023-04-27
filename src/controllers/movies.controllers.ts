@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { TMovieUpdate } from "../interfaces/movies.interface";
 import { createMovieService } from "../services/createMovie.service";
+import { deleteMovieservice } from "../services/deleteMovie.service";
 import { updateMovieService } from "../services/updateMovies.service";
 
 export const createMovieController = async (
@@ -36,5 +37,8 @@ export const deleteMovieController = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  return res.json();
+  const id: number = parseInt(req.params.id);
+
+  deleteMovieservice(id);
+  return res.send();
 };
