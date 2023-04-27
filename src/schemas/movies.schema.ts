@@ -14,4 +14,4 @@ export const movieSchemaRequest = movieSchema.omit({
 
 export const moviesSchemaResponse = z.array(movieSchema);
 
-export const userUpdateSchema = movieSchemaRequest.partial();
+export const movieSchemaUpdate = movieSchemaRequest.partial();
