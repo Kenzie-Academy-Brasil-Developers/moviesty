@@ -12,9 +12,8 @@ export type TMoviesResponse = z.infer<typeof moviesSchemaResponse>;
 export type TMovieUpdate = DeepPartial<TMovieRequest>;
 
 export type TMoviesPagination = {
-  prevPage: string;
-  nextPage: string;
-  page: number | null | undefined;
-  perPage: number | null | undefined;
+  prevPage: string | null;
+  nextPage: string | null;
+  count: number;
   data: TMoviesResponse;
 };

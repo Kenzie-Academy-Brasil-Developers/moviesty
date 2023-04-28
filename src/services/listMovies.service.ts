@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { FindOptionsOrder, Repository } from "typeorm";
 import { string } from "zod";
 import { AppDataSource } from "../data-source";
 import { Movie } from "../entities";
@@ -8,45 +8,92 @@ import {
 } from "../interfaces/movies.interface";
 import { moviesSchemaResponse } from "../schemas/movies.schema";
 
-const listUsersService = async (
-  sort: string | undefined,
-  order: string | undefined,
-  page: number | undefined,
-  perPage: number | undefined
+export const listMovieService = async (
+  sort: string | null,
+  order: string | null,
+  page: number | null,
+  perPage: number | null
 ): Promise<TMoviesPagination> => {
-  const userRepository: Repository<Movie> = AppDataSource.getRepository(Movie);
+  const movieRepository: Repository<Movie> = AppDataSource.getRepository(Movie);
 
-  let movies: Movie[] | undefined;
+  const count = await movieRepository.count();
 
-  const orderBy = order;
   let orderObj = {};
 
-  if (orderBy === "price") {
-    orderObj = {
-      price: "desc",
-    };
-  } else if (orderBy === "duration") {
+  if (sort) {
+    if (order === undefined) {
+      if (sort === "price") {
+        orderObj = {
+          price: "asc",
+        };
+      } else if (sort === "duration") {
+        orderObj = {
+          duration: "asc",
+        };
+      }
+    }
+
+    if (order === "desc") {
+      if (sort === "price") {
+        orderObj = {
+          price: "desc",
+        };
+      } else if (sort === "duration") {
+        orderObj = {
+          duration: "desc",
+        };
+      }
+    }
+
+    if (order === "asc") {
+      if (sort === "price") {
+        orderObj = {
+          price: "asc",
+        };
+      } else if (sort === "duration") {
+        orderObj = {
+          duration: "asc",
+        };
+      }
+    }
   }
 
-  if (!page || !perPage) {
-    movies = await userRepository.find();
-  } else {
-    movies = await userRepository.find({
-      skip: (page - 1) * perPage,
-      take: perPage,
-      order: orderObj,
-    });
-  }
+  const validatePerPage: number =
+    !perPage || perPage <= 0 || perPage > 5 ? 5 : perPage;
+  const validatePage: number =
+    !page || page <= 0 ? 0 : (page - 1) * validatePerPage;
+
+  const movies = await movieRepository.find({
+    skip: validatePage,
+    take: validatePerPage,
+    order: orderObj,
+  });
 
   const returnMovies: TMoviesResponse = moviesSchemaResponse.parse(movies);
 
+  let countUrl = Math.ceil(count / validatePerPage);
+  console.log(countUrl);
+
+  const currentValue: number = !page || page <= 0 ? 1 : page;
+
+  const prevUrl =
+    currentValue <= countUrl && currentValue >= 2
+      ? `http://localhost:3000/movies?page=${
+          currentValue - 1
+        }&perPage=${validatePerPage}`
+      : null;
+
+  const nextUrl =
+    currentValue < countUrl
+      ? `http://localhost:3000/movies?page=${
+          currentValue + 1
+        }&perPage=${validatePerPage}`
+      : null;
+
   return {
-    prevPage: "oi",
-    nextPage: "oi",
-    page: page || null,
-    perPage: perPage || null,
+    prevPage: prevUrl,
+    nextPage: nextUrl,
+    count: count,
     data: returnMovies,
   };
 };
-
-export default listUsersService;

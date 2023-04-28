@@ -10,11 +10,14 @@ export const validateName = async (
   next: NextFunction
 ): Promise<Response | void> => {
   const { name } = req.body;
-  const movieRepo: Repository<Movie> = AppDataSource.getRepository(Movie);
-  const exists = await movieRepo.exist({ where: { name: name } });
 
-  if (exists) {
-    return next(new AppError("Movie already exists.", 409));
+  if (name) {
+    const movieRepo: Repository<Movie> = AppDataSource.getRepository(Movie);
+    const exists = await movieRepo.exist({ where: { name: name } });
+    if (exists) {
+      return next(new AppError("Movie already exists.", 409));
+    }
   }
+
   return next();
 };

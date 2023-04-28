@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { TMovieUpdate } from "../interfaces/movies.interface";
 import { createMovieService } from "../services/createMovie.service";
 import { deleteMovieservice } from "../services/deleteMovie.service";
+import { listMovieService } from "../services/listMovies.service";
 import { updateMovieService } from "../services/updateMovies.service";
 
 export const createMovieController = async (
@@ -16,10 +17,14 @@ export const listMoviesController = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const page: number | undefined = Number(req.query.page);
-  const perPage: number | undefined = Number(req.query.perPage);
+  const sort: string | null = req.query.sort as string;
+  const order: string | null = req.query.order as string;
+  const page: number | null = Number(req.query.page);
+  const perPage: number | null = Number(req.query.perPage);
 
-  return res.json();
+  const listMovie = await listMovieService(sort, order, page, perPage);
+
+  return res.json(listMovie);
 };
 
 export const updateMovieController = async (
@@ -40,5 +45,5 @@ export const deleteMovieController = async (
   const id: number = parseInt(req.params.id);
 
   deleteMovieservice(id);
-  return res.send();
+  return res.status(204).send();
 };

@@ -8,7 +8,7 @@ import {
 import { validateBody } from "./middlewares/validateBody.middlewares";
 import { validateId } from "./middlewares/validateId.middlewares";
 import { validateName } from "./middlewares/validateName.middlewares";
-import { movieSchemaRequest } from "./schemas/movies.schema";
+import { movieSchemaRequest, movieSchemaUpdate } from "./schemas/movies.schema";
 
 const userRouter = Router();
 
@@ -19,7 +19,13 @@ userRouter.post(
   createMovieController
 );
 userRouter.get("", listMoviesController);
-userRouter.patch("/:id", validateId, validateName, updateMovieController);
+userRouter.patch(
+  "/:id",
+  validateId,
+  validateBody(movieSchemaUpdate),
+  validateName,
+  updateMovieController
+);
 userRouter.delete("/:id", validateId, deleteMovieController);
 
 export default userRouter;

@@ -20,8 +20,7 @@ export const updateMovieService = async (
   });
   await userRepository.save(newUserData);
 
-  const returnUser: TMovie = movieSchema.parse(newUserData);
+  const returnMovie: TMovie = movieSchema.parse(newUserData);
 
-  return returnUser;
+  return returnMovie;
 };
-
