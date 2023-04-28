@@ -1,5 +1,4 @@
-import { FindOptionsOrder, Repository } from "typeorm";
-import { string } from "zod";
+import { Repository } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { Movie } from "../entities";
 import {
@@ -72,12 +71,11 @@ export const listMovieService = async (
   const returnMovies: TMoviesResponse = moviesSchemaResponse.parse(movies);
 
   let countUrl = Math.ceil(count / validatePerPage);
-  console.log(countUrl);
 
   const currentValue: number = !page || page <= 0 ? 1 : page;
 
   const prevUrl =
-    currentValue <= countUrl && currentValue >= 2
+    currentValue <= countUrl + 1 && currentValue >= 2
       ? `http://localhost:3000/movies?page=${
           currentValue - 1
         }&perPage=${validatePerPage}`
